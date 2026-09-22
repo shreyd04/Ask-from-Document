@@ -1,0 +1,71 @@
+# =========================
+# Environment / Secrets
+# =========================
+
+.env
+.env.*
+!.env.example
+
+backend/.env
+backend/.env.*
+!backend/.env.example
+
+
+# =========================
+# Python
+# =========================
+
+__pycache__/
+*.py[cod]
+*$py.class
+
+.venv/
+venv/
+env/
+ENV/
+
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+
+# =========================
+# Local databases / indexes
+# =========================
+
+chroma/
+chromadb/
+*.db
+*.sqlite
+*.sqlite3
+
+
+# =========================
+# Generated evaluation files
+# =========================
+
+evaluation/ragas_results.json
+backend/evaluation/ragas_results.json
+
+
+# =========================
+# OS files
+# =========================
+
+.DS_Store
+Thumbs.db
+
+
+# =========================
+# IDE
+# =========================
+
+.vscode/
+.idea/
+
+
+# =========================
+# Logs
+# =========================
+
+*.log

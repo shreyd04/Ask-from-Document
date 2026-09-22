@@ -1,0 +1,12 @@
+fastapi
+uvicorn[standard]
+python-dotenv
+pypdf
+chromadb
+sentence-transformers
+langchain
+langchain-text-splitters
+rank-bm25
+groq
+pytesseract
+pdf2image

@@ -1,0 +1,13 @@
+[
+  {
+    "id": "q001",
+    "question": "who was calderon",
+    "expected_answer": "Calderón was a Spanish dramatist born in 1600 who wrote the play Life Is a Dream.",
+    "expected_sources": [
+      {
+        "document": "baroque part3.pdf",
+        "page": 1
+      }
+    ]
+  }
+]
