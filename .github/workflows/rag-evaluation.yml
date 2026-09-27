@@ -1,0 +1,59 @@
+name: RAG Evaluation
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+  pull_request:
+    branches:
+      - main
+      - master
+
+jobs:
+
+  evaluate-rag:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      # --------------------------------------------------
+      # Checkout repository
+      # --------------------------------------------------
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+
+      # --------------------------------------------------
+      # Setup Python
+      # --------------------------------------------------
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+
+      # --------------------------------------------------
+      # Install dependencies
+      # --------------------------------------------------
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements.txt
+
+
+      # --------------------------------------------------
+      # Run RAG evaluation
+      # --------------------------------------------------
+
+      - name: Run RAGAS evaluation
+        env:
+          GROQ_APIKEY: ${{ secrets.GROQ_APIKEY }}
+
+        run: |
+          python backend/evaluate_ragas.py
