@@ -1,7 +1,8 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+
 from app.answer_pipeline import answer_question
 from app.retrieval import Retriever
-from app.generation import generate_answer
 from app.schemas import (
     QuestionRequest,
     AnswerResponse
@@ -9,22 +10,52 @@ from app.schemas import (
 
 
 app = FastAPI(
-    title="Production RAG API",
-    description="Document question-answering API",
+    title="Ask My Doc API",
+    description="Domain-specific document question-answering API",
     version="1.0.0"
 )
 
 
+# --------------------------------------------------
+# CORS
+# --------------------------------------------------
+
+origins = [
+    "http://localhost:5173",
+    "http://localhost:5174",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+# --------------------------------------------------
+# Retriever
+# --------------------------------------------------
+
 retriever = Retriever()
 
+
+# --------------------------------------------------
+# Root
+# --------------------------------------------------
 
 @app.get("/")
 def root():
 
     return {
-        "message": "Production RAG API is running"
+        "message": "Ask My Doc API is running"
     }
 
+
+# --------------------------------------------------
+# Health
+# --------------------------------------------------
 
 @app.get("/health")
 def health():
@@ -33,6 +64,10 @@ def health():
         "status": "healthy"
     }
 
+
+# --------------------------------------------------
+# Ask
+# --------------------------------------------------
 
 @app.post(
     "/ask",
@@ -51,18 +86,31 @@ def ask_question(
             detail="Question cannot be empty."
         )
 
-    retrieved_documents = retriever.retrieve(
-        question,
-        top_k=5
-    )
+    try:
 
-    result = answer_question(
-    question,
-    retrieved_documents
-)
+        retrieved_documents = retriever.retrieve(
+            question,
+            top_k=5
+        )
 
-    return {
-        "question": question,
-        "answer": result["answer"],
-        "sources": result["sources"]
-    }
+        result = answer_question(
+            question,
+            retrieved_documents
+        )
+
+        return {
+            "question": question,
+            "answer": result["answer"],
+            "sources": result["sources"]
+        }
+
+    except Exception as exc:
+
+        print(
+            f"Error while answering question: {exc}"
+        )
+
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to generate an answer."
+        )

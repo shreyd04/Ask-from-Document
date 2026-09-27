@@ -1,0 +1,19 @@
+{
+  "model": "openai/gpt-oss-120b",
+  "dataset": "/Users/shreyd04/Ask_from_Document/backend/evaluation/golden_dataset.json",
+  "questions": 1,
+  "average_faithfulness": 1.0,
+  "average_context_precision": 0.9999999999,
+  "thresholds": {
+    "faithfulness": 0.8,
+    "context_precision": 0.7
+  },
+  "passed": true,
+  "results": [
+    {
+      "id": "q001",
+      "faithfulness": 1.0,
+      "context_precision": 0.9999999999
+    }
+  ]
+}

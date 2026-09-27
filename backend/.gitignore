@@ -8,3 +8,5 @@ wheels/
 
 # Virtual environments
 .venv
+# RAG evaluation generated results
+backend/evaluation/results/
