@@ -18,10 +18,15 @@
   box-sizing: border-box;
 }
 
-body {
+html,
+body,
+#root {
   margin: 0;
   min-width: 320px;
-  min-height: 100vh;
+  min-height: 100%;
+}
+
+body {
   background:
     radial-gradient(
       circle at top right,
@@ -40,13 +45,19 @@ button {
   cursor: pointer;
 }
 
-.app-shell {
+/* =========================
+   APP
+========================= */
+
+.app {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
-/* ---------- Header ---------- */
+/* =========================
+   HEADER
+========================= */
 
 .topbar {
   height: 76px;
@@ -56,7 +67,7 @@ button {
 
   padding: 0 6vw;
 
-  background: rgba(255, 253, 248, 0.92);
+  background: rgba(255, 253, 248, 0.94);
   border-bottom: 1px solid #ddd5c9;
 
   backdrop-filter: blur(12px);
@@ -72,7 +83,7 @@ button {
   gap: 12px;
 }
 
-.brand-mark {
+.brand-icon {
   width: 40px;
   height: 40px;
 
@@ -99,7 +110,11 @@ button {
   color: #81786d;
 }
 
-.status-pill {
+/* =========================
+   SYSTEM STATUS
+========================= */
+
+.system-status {
   display: inline-flex;
   align-items: center;
   gap: 7px;
@@ -110,23 +125,24 @@ button {
   border-radius: 999px;
 
   background: #fffdf8;
-  color: #5f574f;
 
   font-size: 12px;
   font-weight: 600;
 }
 
-.status-online {
+.system-status.online {
   color: #4f6b50;
 }
 
-.status-offline {
+.system-status.offline {
   color: #9b3d35;
 }
 
-/* ---------- Main ---------- */
+/* =========================
+   MAIN
+========================= */
 
-.main-container {
+.main {
   width: min(960px, calc(100% - 40px));
   margin: 0 auto;
 
@@ -135,31 +151,19 @@ button {
   padding: 72px 0 40px;
 }
 
-/* ---------- Welcome ---------- */
+/* =========================
+   RESEARCH HEADER
+========================= */
 
-.welcome-section {
-  text-align: center;
-  padding-top: 38px;
-}
-
-.hero-icon {
-  width: 58px;
-  height: 58px;
-
-  margin: 0 auto 24px;
-
+.research-header {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  justify-content: space-between;
+  align-items: flex-end;
 
-  border: 1px solid #d8cabc;
-  border-radius: 16px;
+  margin-bottom: 42px;
+  padding-bottom: 18px;
 
-  background: #fffaf2;
-  color: #7a4e2d;
-
-  box-shadow:
-    0 10px 30px rgba(55, 39, 25, 0.07);
+  border-bottom: 1px solid #ddd5c9;
 }
 
 .eyebrow {
@@ -172,8 +176,8 @@ button {
   letter-spacing: 0.16em;
 }
 
-.welcome-section h1 {
-  margin: 13px 0 18px;
+.research-header h1 {
+  margin: 6px 0 0;
 
   color: #25211d;
 
@@ -182,144 +186,32 @@ button {
     "Times New Roman",
     serif;
 
-  font-size: clamp(38px, 6vw, 60px);
+  font-size: 32px;
   font-weight: 500;
-  line-height: 1.05;
-  letter-spacing: -0.035em;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
 }
 
-.hero-description {
-  width: min(620px, 100%);
-  margin: 0 auto;
-
-  color: #71695f;
-
-  font-size: 16px;
-  line-height: 1.7;
-}
-
-.trust-row {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 10px;
-
-  margin-top: 28px;
-}
-
-.trust-item {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-
-  padding: 8px 12px;
-
-  border: 1px solid #ddd5c9;
-  border-radius: 999px;
-
-  background: rgba(255, 253, 248, 0.75);
-
-  color: #645d55;
-
+.question-count {
+  color: #81786d;
   font-size: 12px;
-  font-weight: 600;
+  white-space: nowrap;
 }
 
-.trust-item svg {
-  color: #5b745d;
-}
-
-.suggestions {
-  width: min(680px, 100%);
-
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-
-  margin: 46px auto 0;
-}
-
-.suggestion-card {
-  min-height: 104px;
-
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: space-between;
-
-  padding: 17px;
-
-  text-align: left;
-
-  border: 1px solid #ddd5c9;
-  border-radius: 13px;
-
-  background: #fffdf8;
-  color: #3f3933;
-
-  transition:
-    transform 0.18s ease,
-    border-color 0.18s ease,
-    box-shadow 0.18s ease;
-}
-
-.suggestion-card svg {
-  color: #8a5c39;
-}
-
-.suggestion-card span {
-  font-size: 13px;
-  line-height: 1.45;
-}
-
-.suggestion-card:hover {
-  transform: translateY(-2px);
-
-  border-color: #bca993;
-
-  box-shadow:
-    0 12px 28px rgba(58, 43, 28, 0.08);
-}
-
-/* ---------- Conversation ---------- */
+/* =========================
+   CONVERSATION
+========================= */
 
 .conversation {
   padding-bottom: 30px;
 }
 
-.conversation-heading {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-
-  margin-bottom: 42px;
-
-  padding-bottom: 18px;
-
-  border-bottom: 1px solid #ddd5c9;
-}
-
-.conversation-heading h2 {
-  margin: 6px 0 0;
-
-  font-family:
-    Georgia,
-    "Times New Roman",
-    serif;
-
-  font-size: 27px;
-  font-weight: 500;
-}
-
-.message-count {
-  color: #81786d;
-  font-size: 12px;
-}
-
-/* ---------- User message ---------- */
+/* =========================
+   USER MESSAGE
+========================= */
 
 .message-row {
-  margin-bottom: 24px;
+  margin-bottom: 30px;
 }
 
 .user-row {
@@ -328,7 +220,7 @@ button {
   align-items: flex-end;
 }
 
-.user-label {
+.message-label {
   margin-bottom: 7px;
 
   color: #8a5c39;
@@ -347,65 +239,19 @@ button {
   border-radius: 14px 14px 4px 14px;
 
   background: #eee6d9;
-
   color: #332d27;
 
   font-size: 15px;
   line-height: 1.6;
 }
 
-/* ---------- Answer ---------- */
-
-.answer-block {
-  margin-bottom: 42px;
-}
-
-.answer-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  margin-bottom: 10px;
-}
-
-.answer-label {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-
-  color: #514940;
-
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-}
-
-.assistant-mark {
-  width: 31px;
-  height: 31px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  border-radius: 9px;
-
-  background: #29231e;
-  color: #fffaf2;
-}
-
-.grounded-badge {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-
-  color: #4f6b50;
-
-  font-size: 11px;
-  font-weight: 700;
-}
+/* =========================
+   ANSWER
+========================= */
 
 .answer-card {
+  margin-bottom: 42px;
+
   padding: 24px;
 
   border: 1px solid #dcd3c6;
@@ -417,6 +263,20 @@ button {
     0 10px 30px rgba(58, 43, 28, 0.05);
 }
 
+.answer-label {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  margin-bottom: 12px;
+
+  color: #514940;
+
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+
 .answer-text {
   color: #332e29;
 
@@ -426,140 +286,61 @@ button {
   white-space: pre-wrap;
 }
 
-/* ---------- Sources ---------- */
+/* =========================
+   SOURCES
+========================= */
 
 .sources-section {
   margin-top: 25px;
+  padding-top: 18px;
+
+  border-top: 1px solid #e4dcd0;
 }
 
-.sources-heading {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
+.sources-title {
+  margin-bottom: 10px;
 
-  margin-bottom: 12px;
+  color: #8a5c39;
+
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
 }
 
-.sources-heading h3 {
-  margin: 5px 0 0;
-
-  font-size: 15px;
-  font-weight: 700;
-}
-
-.source-count {
-  color: #81786d;
-  font-size: 11px;
-}
-
-.source-list {
+.sources-list {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.source-card {
-  overflow: hidden;
+.source-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 
-  border: 1px solid #dcd3c6;
-  border-radius: 11px;
+  padding: 10px 12px;
+
+  border: 1px solid #e0d7ca;
+  border-radius: 9px;
 
   background: #fffaf3;
-}
-
-.source-main {
-  min-height: 62px;
-
-  display: flex;
-  align-items: center;
-
-  gap: 12px;
-
-  padding: 11px 13px;
-}
-
-.source-icon {
-  width: 34px;
-  height: 34px;
-
-  flex-shrink: 0;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  border-radius: 8px;
-
-  background: #eee4d6;
-  color: #7a4e2d;
-}
-
-.source-info {
-  min-width: 0;
-  flex: 1;
-}
-
-.source-document {
-  overflow: hidden;
-
-  color: #39322c;
-
-  font-size: 13px;
-  font-weight: 700;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.source-page {
-  margin-top: 3px;
-
-  color: #857b70;
-
-  font-size: 11px;
-}
-
-.source-toggle {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-
-  border: none;
-  background: transparent;
-
-  color: #7a4e2d;
-
-  font-size: 11px;
-  font-weight: 700;
-}
-
-.source-detail {
-  padding: 13px 15px;
-
-  border-top: 1px solid #e4dcd0;
-
-  background: #f8f2e8;
 
   color: #625a51;
 
   font-size: 12px;
-  line-height: 1.6;
+  line-height: 1.5;
 }
 
-.source-detail span {
-  color: #8a5c39;
-
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.1em;
+.source-item svg {
+  flex-shrink: 0;
+  color: #7a4e2d;
 }
 
-.source-detail p {
-  margin: 6px 0 0;
-}
+/* =========================
+   LOADING
+========================= */
 
-/* ---------- Loading ---------- */
-
-.loading-row {
+.retrieving {
   display: flex;
   align-items: center;
   gap: 11px;
@@ -571,7 +352,12 @@ button {
   font-size: 13px;
 }
 
-.loading-row small {
+.retrieving strong {
+  display: block;
+  font-weight: 700;
+}
+
+.retrieving span {
   display: block;
 
   margin-top: 2px;
@@ -580,7 +366,23 @@ button {
   font-size: 11px;
 }
 
-.spinner {
+.retrieving-icon {
+  width: 34px;
+  height: 34px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 9px;
+
+  background: #29231e;
+  color: #fffaf2;
+}
+
+.spin {
   animation: spin 0.9s linear infinite;
 }
 
@@ -590,7 +392,9 @@ button {
   }
 }
 
-/* ---------- Error ---------- */
+/* =========================
+   ERROR
+========================= */
 
 .error-card {
   display: flex;
@@ -610,6 +414,10 @@ button {
   font-size: 13px;
 }
 
+.error-card strong {
+  display: block;
+}
+
 .error-card p {
   margin: 4px 0 0;
 
@@ -617,16 +425,14 @@ button {
   line-height: 1.5;
 }
 
-/* ---------- Input ---------- */
+/* =========================
+   QUESTION INPUT
+========================= */
 
-.input-section {
+.question-form {
   position: sticky;
   bottom: 15px;
 
-  padding-top: 15px;
-}
-
-.question-form {
   display: flex;
   align-items: flex-end;
   gap: 10px;
@@ -669,7 +475,7 @@ button {
   color: #9a9187;
 }
 
-.send-button {
+.question-form button {
   width: 42px;
   height: 42px;
 
@@ -690,27 +496,21 @@ button {
     transform 0.18s ease;
 }
 
-.send-button:hover:not(:disabled) {
+.question-form button:hover:not(:disabled) {
   background: #7a4e2d;
   transform: translateY(-1px);
 }
 
-.send-button:disabled {
+.question-form button:disabled {
   opacity: 0.35;
   cursor: not-allowed;
 }
 
-.input-note {
-  margin: 9px 4px 0;
+/* =========================
+   FOOTER
+========================= */
 
-  color: #938a80;
-
-  font-size: 10px;
-  text-align: center;
-}
-
-/* ---------- Footer ---------- */
-
+footer,
 .footer {
   display: flex;
   justify-content: center;
@@ -724,7 +524,9 @@ button {
   letter-spacing: 0.04em;
 }
 
-/* ---------- Responsive ---------- */
+/* =========================
+   RESPONSIVE
+========================= */
 
 @media (max-width: 720px) {
   .topbar {
@@ -736,37 +538,25 @@ button {
     display: none;
   }
 
-  .status-pill {
+  .system-status {
     padding: 7px 9px;
   }
 
-  .main-container {
+  .main {
     width: min(100% - 24px, 960px);
     padding-top: 45px;
   }
 
-  .welcome-section {
-    padding-top: 20px;
-  }
-
-  .welcome-section h1 {
-    font-size: 40px;
-  }
-
-  .suggestions {
-    grid-template-columns: 1fr;
-  }
-
-  .suggestion-card {
-    min-height: 78px;
-  }
-
-  .conversation-heading {
+  .research-header {
     align-items: flex-start;
     gap: 10px;
   }
 
-  .message-count {
+  .research-header h1 {
+    font-size: 29px;
+  }
+
+  .question-count {
     white-space: nowrap;
   }
 
@@ -777,24 +567,6 @@ button {
   .answer-card {
     padding: 18px;
   }
-
-  .answer-header {
-    align-items: flex-start;
-    gap: 10px;
-  }
-
-  .grounded-badge {
-    white-space: nowrap;
-  }
-
-  .source-toggle {
-    font-size: 0;
-  }
-
-  .source-toggle svg {
-    width: 17px;
-    height: 17px;
-  }
 }
 
 @media (max-width: 450px) {
@@ -802,32 +574,20 @@ button {
     font-size: 11px;
   }
 
-  .brand-mark {
+  .brand-icon {
     width: 36px;
     height: 36px;
   }
 
-  .status-pill {
+  .system-status {
     font-size: 10px;
   }
 
-  .welcome-section h1 {
-    font-size: 34px;
+  .research-header h1 {
+    font-size: 26px;
   }
 
-  .hero-description {
-    font-size: 14px;
-  }
-
-  .trust-row {
-    justify-content: flex-start;
-  }
-
-  .trust-item {
-    font-size: 10px;
-  }
-
-  .answer-header {
-    flex-direction: column;
+  .question-form {
+    bottom: 8px;
   }
 }

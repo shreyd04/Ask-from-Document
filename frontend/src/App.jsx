@@ -1,17 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   BookOpen,
-  CheckCircle2,
-  ChevronDown,
-  ChevronUp,
-  FileText,
-  Loader2,
-  MessageSquare,
-  Send,
-  ShieldCheck,
-  Sparkles,
   Wifi,
   WifiOff,
+  Send,
+  LoaderCircle,
+  AlertCircle,
 } from "lucide-react";
 
 import "./App.css";
@@ -22,44 +16,71 @@ function App() {
   const [question, setQuestion] = useState("");
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [apiOnline, setApiOnline] = useState(null);
-  const [expandedSources, setExpandedSources] = useState({});
+  const [backendOnline, setBackendOnline] = useState(false);
 
-  const checkHealth = async () => {
+  const checkBackend = async () => {
+    if (!API_URL) {
+      console.error("VITE_API_URL is not configured.");
+      setBackendOnline(false);
+      return;
+    }
+
     try {
       const response = await fetch(`${API_URL}/health`);
 
       if (!response.ok) {
-        throw new Error("Backend unavailable");
+        throw new Error(`Health check failed: ${response.status}`);
       }
 
-      setApiOnline(true);
-    } catch {
-      setApiOnline(false);
+      const data = await response.json();
+
+      setBackendOnline(data.status === "healthy");
+    } catch (error) {
+      console.error("Backend health check failed:", error);
+      setBackendOnline(false);
     }
   };
 
-  const askQuestion = async (questionText = question) => {
-    const cleanQuestion = questionText.trim();
+  useEffect(() => {
+    checkBackend();
+  }, []);
 
-    if (!cleanQuestion || loading) {
+  const askQuestion = async (event) => {
+    event?.preventDefault();
+
+    // IMPORTANT:
+    // Capture the question BEFORE changing/clearing state.
+    const currentQuestion = question.trim();
+
+    if (!currentQuestion) {
       return;
     }
 
-    setLoading(true);
+    if (!API_URL) {
+      setMessages((previous) => [
+        ...previous,
+        {
+          type: "error",
+          message: "Backend URL is not configured.",
+        },
+      ]);
 
-    const userMessage = {
-      id: crypto.randomUUID(),
-      role: "user",
-      content: cleanQuestion,
-    };
+      return;
+    }
 
+    // Add user's question immediately.
     setMessages((previous) => [
       ...previous,
-      userMessage,
+      {
+        type: "user",
+        question: currentQuestion,
+      },
     ]);
 
+    // Clear input only AFTER saving the question.
     setQuestion("");
+
+    setLoading(true);
 
     try {
       const response = await fetch(`${API_URL}/ask`, {
@@ -68,84 +89,80 @@ function App() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          question: cleanQuestion,
+          question: currentQuestion,
         }),
       });
 
-      const data = await response.json();
+      const contentType = response.headers.get("content-type") || "";
 
-      if (!response.ok) {
+      let data;
+
+      if (contentType.includes("application/json")) {
+        data = await response.json();
+      } else {
+        const text = await response.text();
+
         throw new Error(
-          data.detail || "The request could not be completed."
+          `Backend returned non-JSON response (${response.status}): ${text}`
         );
       }
 
-      const assistantMessage = {
-        id: crypto.randomUUID(),
-        role: "assistant",
-        content: data.answer,
-        sources: data.sources || [],
-      };
+      if (!response.ok) {
+        throw new Error(
+          data?.detail ||
+            data?.message ||
+            `Request failed with status ${response.status}`
+        );
+      }
 
       setMessages((previous) => [
         ...previous,
-        assistantMessage,
+        {
+          type: "answer",
+          answer: data.answer,
+          sources: data.sources || [],
+        },
       ]);
 
-      setApiOnline(true);
+      setBackendOnline(true);
     } catch (error) {
-      setApiOnline(false);
-
-      const errorMessage = {
-        id: crypto.randomUUID(),
-        role: "error",
-        content:
-          error.message ||
-          "Unable to connect to the Ask My Doc backend.",
-      };
+      console.error("Ask request failed:", error);
 
       setMessages((previous) => [
         ...previous,
-        errorMessage,
+        {
+          type: "error",
+          message: error.message || "Request failed.",
+        },
       ]);
+
+      // Only mark offline for actual connection/server failures.
+      if (
+        error.message?.includes("Failed to fetch") ||
+        error.message?.includes("NetworkError") ||
+        error.message?.includes("503") ||
+        error.message?.includes("502")
+      ) {
+        setBackendOnline(false);
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    askQuestion();
-  };
-
   const handleKeyDown = (event) => {
     if (event.key === "Enter" && !event.shiftKey) {
       event.preventDefault();
-      askQuestion();
+      askQuestion(event);
     }
   };
 
-  const toggleSource = (messageId, sourceIndex) => {
-    const key = `${messageId}-${sourceIndex}`;
-
-    setExpandedSources((previous) => ({
-      ...previous,
-      [key]: !previous[key],
-    }));
-  };
-
-  const suggestedQuestions = [
-    "What are the main characteristics of Baroque art?",
-    "Who were the major artists associated with Baroque art?",
-    "How did Baroque art differ from Renaissance art?",
-  ];
-
   return (
-    <div className="app-shell">
+    <div className="app">
       <header className="topbar">
         <div className="brand">
-          <div className="brand-mark">
-            <BookOpen size={21} strokeWidth={1.8} />
+          <div className="brand-icon">
+            <BookOpen size={28} strokeWidth={2} />
           </div>
 
           <div>
@@ -156,329 +173,166 @@ function App() {
           </div>
         </div>
 
-        <button
-          className={`status-pill ${
-            apiOnline === false
-              ? "status-offline"
-              : "status-online"
+        <div
+          className={`system-status ${
+            backendOnline ? "online" : "offline"
           }`}
-          onClick={checkHealth}
-          type="button"
         >
-          {apiOnline === false ? (
-            <WifiOff size={14} />
+          {backendOnline ? (
+            <>
+              <Wifi size={17} />
+              <span>System Check</span>
+            </>
           ) : (
-            <Wifi size={14} />
+            <>
+              <WifiOff size={17} />
+              <span>Backend Offline</span>
+            </>
           )}
-
-          {apiOnline === false
-            ? "Backend Offline"
-            : "System Check"}
-        </button>
+        </div>
       </header>
 
-      <main className="main-container">
-        {messages.length === 0 ? (
-          <section className="welcome-section">
-            <div className="hero-icon">
-              <Sparkles size={27} strokeWidth={1.7} />
-            </div>
+      <main className="main">
+        <section className="research-header">
+          <div>
+            <div className="eyebrow">RESEARCH SESSION</div>
 
-            <p className="eyebrow">
-              DOMAIN-SPECIFIC DOCUMENT QA
-            </p>
+            <h1>Baroque Art Documents</h1>
+          </div>
 
-            <h1>
-              Explore Baroque art
-              <br />
-              through your documents.
-            </h1>
+          <div className="question-count">
+            {messages.filter((message) => message.type === "user").length}{" "}
+            questions
+          </div>
+        </section>
 
-            <p className="hero-description">
-              Ask questions about the indexed Baroque art
-              collection and receive answers grounded in
-              retrieved document evidence.
-            </p>
-
-            <div className="trust-row">
-              <div className="trust-item">
-                <ShieldCheck size={16} />
-                <span>Evidence grounded</span>
-              </div>
-
-              <div className="trust-item">
-                <FileText size={16} />
-                <span>Document citations</span>
-              </div>
-
-              <div className="trust-item">
-                <CheckCircle2 size={16} />
-                <span>Retrieval based</span>
-              </div>
-            </div>
-
-            <div className="suggestions">
-              {suggestedQuestions.map((item) => (
-                <button
-                  key={item}
-                  className="suggestion-card"
-                  onClick={() => askQuestion(item)}
-                  type="button"
-                >
-                  <MessageSquare size={17} />
-                  <span>{item}</span>
-                </button>
-              ))}
-            </div>
-          </section>
-        ) : (
-          <section className="conversation">
-            <div className="conversation-heading">
-              <div>
-                <p className="eyebrow">RESEARCH SESSION</p>
-                <h2>Baroque Art Documents</h2>
-              </div>
-
-              <span className="message-count">
-                {messages.filter(
-                  (message) => message.role === "user"
-                ).length}{" "}
-                questions
-              </span>
-            </div>
-
-            {messages.map((message) => {
-              if (message.role === "user") {
-                return (
-                  <div
-                    className="message-row user-row"
-                    key={message.id}
-                  >
-                    <div className="user-label">YOU</div>
-
-                    <div className="user-message">
-                      {message.content}
-                    </div>
-                  </div>
-                );
-              }
-
-              if (message.role === "error") {
-                return (
-                  <div
-                    className="error-card"
-                    key={message.id}
-                  >
-                    <WifiOff size={18} />
-                    <div>
-                      <strong>Request failed</strong>
-                      <p>{message.content}</p>
-                    </div>
-                  </div>
-                );
-              }
-
+        <section className="conversation">
+          {messages.map((message, index) => {
+            if (message.type === "user") {
               return (
-                <div
-                  className="answer-block"
-                  key={message.id}
-                >
-                  <div className="answer-header">
-                    <div className="answer-label">
-                      <div className="assistant-mark">
-                        <BookOpen size={16} />
-                      </div>
+                <div className="message-row user-row" key={index}>
+                  <div className="message-label">YOU</div>
 
-                      <span>ASK MY DOC</span>
-                    </div>
+                  <div className="user-message">
+                    {message.question}
+                  </div>
+                </div>
+              );
+            }
 
-                    <div className="grounded-badge">
-                      <CheckCircle2 size={14} />
-                      Grounded response
-                    </div>
+            if (message.type === "answer") {
+              return (
+                <div className="answer-card" key={index}>
+                  <div className="answer-label">ASK MY DOC</div>
+
+                  <div className="answer-text">
+                    {message.answer}
                   </div>
 
-                  <div className="answer-card">
-                    <div className="answer-text">
-                      {message.content}
-                    </div>
-                  </div>
-
-                  {message.sources?.length > 0 && (
+                  {message.sources.length > 0 && (
                     <div className="sources-section">
-                      <div className="sources-heading">
-                        <div>
-                          <p className="eyebrow">
-                            RETRIEVED EVIDENCE
-                          </p>
-
-                          <h3>
-                            Document citations
-                          </h3>
-                        </div>
-
-                        <span className="source-count">
-                          {message.sources.length}{" "}
-                          source
-                          {message.sources.length !== 1
-                            ? "s"
-                            : ""}
-                        </span>
+                      <div className="sources-title">
+                        SOURCES
                       </div>
 
-                      <div className="source-list">
-                        {message.sources.map(
-                          (source, index) => {
-                            const key = `${message.id}-${index}`;
-                            const expanded =
-                              expandedSources[key];
+                      <div className="sources-list">
+                        {message.sources.map((source, sourceIndex) => (
+                          <div
+                            className="source-item"
+                            key={sourceIndex}
+                          >
+                            <BookOpen size={15} />
 
-                            return (
-                              <div
-                                className="source-card"
-                                key={key}
-                              >
-                                <div className="source-main">
-                                  <div className="source-icon">
-                                    <FileText
-                                      size={17}
-                                    />
-                                  </div>
-
-                                  <div className="source-info">
-                                    <div className="source-document">
-                                      {source.document}
-                                    </div>
-
-                                    <div className="source-page">
-                                      Page {source.page}
-                                    </div>
-                                  </div>
-
-                                  <button
-                                    className="source-toggle"
-                                    onClick={() =>
-                                      toggleSource(
-                                        message.id,
-                                        index
-                                      )
-                                    }
-                                    type="button"
-                                  >
-                                    {expanded ? (
-                                      <>
-                                        Hide
-                                        <ChevronUp
-                                          size={16}
-                                        />
-                                      </>
-                                    ) : (
-                                      <>
-                                        Details
-                                        <ChevronDown
-                                          size={16}
-                                        />
-                                      </>
-                                    )}
-                                  </button>
-                                </div>
-
-                                {expanded && (
-                                  <div className="source-detail">
-                                    <span>
-                                      Citation {index + 1}
-                                    </span>
-
-                                    <p>
-                                      Retrieved from{" "}
-                                      <strong>
-                                        {source.document}
-                                      </strong>{" "}
-                                      on page{" "}
-                                      <strong>
-                                        {source.page}
-                                      </strong>
-                                      .
-                                    </p>
-                                  </div>
-                                )}
-                              </div>
-                            );
-                          }
-                        )}
+                            <span>
+                              {source.document}
+                              {" — "}
+                              Page {source.page}
+                            </span>
+                          </div>
+                        ))}
                       </div>
                     </div>
                   )}
                 </div>
               );
-            })}
+            }
 
-            {loading && (
-              <div className="loading-row">
-                <div className="assistant-mark">
-                  <Loader2
-                    size={17}
-                    className="spinner"
-                  />
+            if (message.type === "error") {
+              return (
+                <div className="error-card" key={index}>
+                  <AlertCircle size={19} />
+
+                  <div>
+                    <strong>Request failed</strong>
+
+                    <p>{message.message}</p>
+                  </div>
                 </div>
+              );
+            }
 
-                <div>
-                  <span>Retrieving evidence...</span>
-                  <small>
-                    Searching the document collection
-                  </small>
-                </div>
-              </div>
-            )}
-          </section>
-        )}
+            return null;
+          })}
 
-        <section className="input-section">
-          <form
-            className="question-form"
-            onSubmit={handleSubmit}
-          >
-            <textarea
-              value={question}
-              onChange={(event) =>
-                setQuestion(event.target.value)
-              }
-              onKeyDown={handleKeyDown}
-              placeholder="Ask a question about the Baroque art documents..."
-              rows={1}
-              disabled={loading}
-            />
-
-            <button
-              className="send-button"
-              type="submit"
-              disabled={
-                loading || !question.trim()
-              }
-              aria-label="Ask question"
-            >
-              {loading ? (
-                <Loader2
-                  size={19}
-                  className="spinner"
+          {loading && (
+            <div className="retrieving">
+              <div className="retrieving-icon">
+                <LoaderCircle
+                  size={21}
+                  className="spin"
                 />
-              ) : (
-                <Send size={19} />
-              )}
-            </button>
-          </form>
+              </div>
 
-          <p className="input-note">
-            Answers are generated from the indexed document
-            collection and accompanied by available citations.
-          </p>
+              <div>
+                <strong>Retrieving evidence...</strong>
+
+                <span>
+                  Searching the document collection
+                </span>
+              </div>
+            </div>
+          )}
         </section>
+
+        <form
+          className="question-form"
+          onSubmit={askQuestion}
+        >
+          <textarea
+            value={question}
+            onChange={(event) =>
+              setQuestion(event.target.value)
+            }
+            onKeyDown={handleKeyDown}
+            placeholder="Ask a question about the Baroque art documents..."
+            disabled={loading}
+            rows={1}
+          />
+
+          <button
+            type="submit"
+            disabled={!question.trim() || loading}
+            aria-label="Ask question"
+          >
+            {loading ? (
+              <LoaderCircle
+                size={22}
+                className="spin"
+              />
+            ) : (
+              <Send size={22} />
+            )}
+          </button>
+        </form>
+
+        <div className="disclaimer">
+          Answers are generated from the indexed document collection
+          and accompanied by available citations.
+        </div>
       </main>
 
-      <footer className="footer">
-        <span>Ask My Doc</span>
-        <span>•</span>
-        <span>Baroque Art Knowledge Base</span>
+      <footer>
+        Ask My Doc&nbsp;&nbsp;•&nbsp;&nbsp; Baroque Art Knowledge Base
       </footer>
     </div>
   );
