@@ -548,22 +548,7 @@ This README was written to match the actual implementation in the repository:
 - the evaluation scripts and thresholds match the repository files
 - the sample question and answer are sourced from the dataset in `backend/evaluation/golden_dataset.json`
 - the API and setup commands reflect the actual project structure
-- screenshots and demo links are intentionally left as placeholders because the repository does not contain them
 
-## Summary of README update
 
-Added a professional project overview, architecture explanation, API documentation, setup steps, evaluation details, and deployment notes tailored to the real repository implementation.
-
-Placeholders still to replace manually:
-
-- Live demo URL
-- Screen recording link
-- Screenshot files and their placement in `docs/screenshots/`
-- Second real example question/output once the dataset is expanded
-
-Factual information that could not be fully verified from the repository alone:
-
-- the historical Render testing details and memory-related instability description were included as a project note, but they are not represented as code or configuration in the repo itself
-- the repository does not include screenshot assets or a live demo URL, so those remain placeholders by design
 
 
