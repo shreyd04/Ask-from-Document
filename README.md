@@ -13,18 +13,20 @@ Ask From Document is a domain-specific Retrieval-Augmented Generation system for
 
 ## Demo
 
-### Live Demo
-[Live demo URL or "Run locally"]
-
 ### Screen Recording
-[Watch the 1–2 minute screen-recorded demo](ADD_VIDEO_LINK_HERE)
+
+[Watch the 1–2 minute screen-recorded demo]()
 
 ### Screenshots
 
 The project currently does not include checked-in screenshots. Add files under `docs/screenshots/` and replace the placeholders below.
 
-- [Application UI screenshot placeholder — add to `docs/screenshots/app-ui.png`]
-- [Example question and answer screenshot placeholder — add to `docs/screenshots/question-answer.png`]
+
+- [Application UI screenshot placeholder — add to `<img width="1440" height="900" alt="Screenshot 2026-10-11 at 10 41 19 AM" src="https://github.com/user-attachments/assets/8a7fd202-91cf-4f7b-83af-fd5c0d49b9e6" />
+`]
+
+- [Example question and answer screenshot placeholder — add to `<img width="1440" height="900" alt="Screenshot 2026-10-11 at 10 38 39 AM" src="https://github.com/user-attachments/assets/c82f9633-dcc4-4582-bed6-e4a87d73a7ec" />
+`]
 - [Citation view screenshot placeholder — add to `docs/screenshots/citations.png`]
 - [Retrieval/evidence view screenshot placeholder — add to `docs/screenshots/retrieval-evidence.png`]
 
