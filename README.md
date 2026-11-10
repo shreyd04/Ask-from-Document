@@ -1,5 +1,10 @@
 # Ask From Document — Domain-Specific RAG for Baroque Art
 
+## Demo
+
+![](Ask_from_doc_demo.mp4)
+
+
 Ask From Document is a domain-specific Retrieval-Augmented Generation system for asking questions about a curated collection of Baroque art documents. The application retrieves relevant passages from the indexed corpus, grounds the answer in those sources, and returns document/page citations to make the response traceable.
 
 ## What This Project Demonstrates
@@ -10,13 +15,6 @@ Ask From Document is a domain-specific Retrieval-Augmented Generation system for
 - Evidence-grounded answer generation constrained by retrieved context
 - Citation-aware responses tied to document and page metadata
 - Automated evaluation with a golden dataset and GitHub Actions
-
-## Demo
-
-### Screen Recording
-
-
-
 
 ### Screenshots
 
