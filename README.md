@@ -2,7 +2,8 @@
 
 ## Demo
 
-![](Ask_from_doc_demo.mp4)
+[![Watch the video]()](https://githubusercontent.com)
+
 
 
 Ask From Document is a domain-specific Retrieval-Augmented Generation system for asking questions about a curated collection of Baroque art documents. The application retrieves relevant passages from the indexed corpus, grounds the answer in those sources, and returns document/page citations to make the response traceable.
